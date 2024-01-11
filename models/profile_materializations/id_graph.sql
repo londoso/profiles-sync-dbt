@@ -34,11 +34,11 @@ FROM (
     FROM {{ var("schema_name") }}.id_graph_updates as updates
     LEFT JOIN {{ var("schema_name") }}.id_graph_updates as updates2
         ON updates2.segment_id = updates.canonical_segment_id
-        AND CAST(updates.uuid_ts AS datetime) < {{ dbt.dateadd('hour', 2, 'updates2.uuid_ts') }}
+        AND CAST(updates.uuid_ts AS timestamp) < {{ dbt.dateadd('hour', 2, 'updates2.uuid_ts') }}
         AND updates2.canonical_segment_id <> updates2.segment_id
         AND updates2.canonical_segment_id <> updates.canonical_segment_id 
     {% if is_incremental() -%}
-    WHERE CAST(updates.uuid_ts AS datetime) > CAST((SELECT MAX(uuid_ts) FROM {{ this }}) as datetime)
+    WHERE CAST(updates.uuid_ts AS timestamp) > CAST((SELECT MAX(uuid_ts) FROM {{ this }}) as timestamp)
     {%- endif %}
     ) AS all_updates
 WHERE rn = 1
