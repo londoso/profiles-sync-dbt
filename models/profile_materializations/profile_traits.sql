@@ -92,7 +92,7 @@ updates as (
     SELECT distinct
         COALESCE(id_graph.canonical_segment_id,updates.segment_id) as canonical_segment_id,
         {% for col in column_names %}
-            LAST_VALUE(updates.{{ col }} IGNORE NULLS) 
+            LAST_VALUE(updates.{{ col }}) 
             OVER(PARTITION BY COALESCE(id_graph.canonical_segment_id,updates.segment_id) ORDER BY updates.seq 
                 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS {{ col }}
         {%- if not loop.last %},{% endif %}
@@ -132,7 +132,7 @@ updates as (
     SELECT distinct 
         COALESCE(id_graph.canonical_segment_id,updates.segment_id) as canonical_segment_id,
         {% for col in column_names %}
-            LAST_VALUE(updates.{{ col }} IGNORE NULLS) 
+            LAST_VALUE(updates.{{ col }}) 
             OVER(PARTITION BY COALESCE(id_graph.canonical_segment_id,updates.segment_id) ORDER BY updates.seq 
                 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS {{ col }},
             {% endfor %}
