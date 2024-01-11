@@ -54,7 +54,7 @@ Traits will be sequenced in timestamp order (the most recent is prioritized) - f
 {{- existing_cols.append( col.name ) or "" -}} 
 {% endfor -%}
 
-{%- set get_max_ts %} SELECT CAST(MAX(uuid_ts) AS datetime) FROM {{ this }} {% endset -%}
+{%- set get_max_ts %} SELECT CAST(MAX(uuid_ts) AS timestamp) FROM {{ this }} {% endset -%}
 {% set results2 = run_query(get_max_ts) %}
 {%- if execute %}
     {% set ts = results2.columns[0].values()[0] %}
@@ -65,7 +65,7 @@ Traits will be sequenced in timestamp order (the most recent is prioritized) - f
 
 WITH id_graph AS (
     SELECT * FROM {{ ref('id_graph') }} 
-    WHERE CAST(etl_ts as datetime) >= {{ dateadd('hour', -var('etl_overlap'), '\'' ~ ts ~ '\'') }}
+    WHERE CAST(etl_ts as timestamp) >= {{ dateadd('hour', -var('etl_overlap'), '\'' ~ ts ~ '\'') }}
 ),
 
 merges AS (
